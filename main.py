@@ -10,11 +10,9 @@ def init_geocoder_connection(*toponym_to_find):
     geocoder_params = {
         "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
         "geocode": toponym_to_find,
-        # "geocode": "Australia",
         "format": "json"}
 
     response = requests.get(geocoder_api_server, params=geocoder_params)
-    print(response.url)
     if not response:
         print("Error connecting to geocoder")
         return -1
@@ -31,7 +29,7 @@ def coords_creation(response):
 
 
 def calculate_spn(lower_corner, upper_corner):
-    spn = [round(upper_corner[0] - lower_corner[0], 6), abs(round(upper_corner[1] - lower_corner[1], 6))]
+    spn = [abs(round(upper_corner[0] - lower_corner[0], 6)), abs(round(upper_corner[1] - lower_corner[1], 6))]
     return spn
 
 
