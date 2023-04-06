@@ -1,7 +1,7 @@
 from io import BytesIO
 
 import requests
-from PIL import Image
+import pygame
 
 
 def init_geocoder_connection(toponym_to_find):
@@ -60,4 +60,10 @@ if __name__ == "__main__":
     spn = find_toponym_spn(geocoder_response)
 
     image = create_image_response(coords, spn)
-    Image.open(BytesIO(image.content)).show()
+    pygame.init()
+    screen = pygame.display.set_mode((600, 450))
+    screen.blit(pygame.image.load(BytesIO(image.content)), (0, 0))
+    pygame.display.flip()
+    while pygame.event.wait().type != pygame.QUIT:
+        pass
+    pygame.quit()
