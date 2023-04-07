@@ -1,3 +1,4 @@
+import sys
 from io import BytesIO
 
 import requests
@@ -69,8 +70,18 @@ if __name__ == "__main__":
     image = create_image_response(coords, spn)
     pygame.init()
     screen = pygame.display.set_mode((600, 450))
-    screen.blit(pygame.image.load(BytesIO(image.content)), (0, 0))
-    pygame.display.flip()
-    while pygame.event.wait().type != pygame.QUIT:
-        pass
-    pygame.quit()
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_PAGEUP:
+                    print("Increase zoom")
+                    # function increasing zoom
+                if event.key == pygame.K_PAGEDOWN:
+                    print("Decrease zoom")
+                    # function decreasing zoom
+        screen.blit(pygame.image.load(BytesIO(image.content)), (0, 0))
+        pygame.display.flip()
