@@ -1,8 +1,8 @@
 import sys
 from io import BytesIO
 
-import requests
 import pygame
+import requests
 
 
 def init_geocoder_connection(*toponym_to_find):
@@ -51,7 +51,7 @@ def create_image_response(coords, spn):
     map_params = {
         "ll": coords,
         "spn": ",".join([str(elem) for elem in spn]),
-        "l": "map"
+        "l": "map",
     }
 
     map_api_server = "http://static-maps.yandex.ru/1.x/"
@@ -61,8 +61,21 @@ def create_image_response(coords, spn):
     return response
 
 
+def increase_zoom(spn):
+    if round(spn[0] / 1.5, 6) >= 0.002 and round(spn[1] / 1.5, 6) >= 0.001:
+        spn = list(map(lambda x: round(x / 1.5, 6), spn))
+    return spn
+
+
+def decrease_zoom(spn):
+    if round(spn[0] * 1.5, 6) <= 180 and round(spn[1] * 1.2, 6) <= 90:
+        spn = list(map(lambda x: round(x * 1.5, 6), spn))
+    return spn
+
+
 if __name__ == "__main__":
     toponym = "37.60519,55.82307"
+    scale = 1.0
     geocoder_response = init_geocoder_connection(toponym)
     coords = coords_creation(geocoder_response)
     spn = find_toponym_spn(geocoder_response)
@@ -71,17 +84,18 @@ if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((600, 450))
     running = True
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_PAGEUP:
-                    print("Increase zoom")
-                    # function increasing zoom
-                if event.key == pygame.K_PAGEDOWN:
-                    print("Decrease zoom")
-                    # function decreasing zoom
+                if event.key == pygame.K_UP:
+                    spn = increase_zoom(spn)
+                    image = create_image_response(coords, spn)
+                if event.key == pygame.K_DOWN:
+                    spn = decrease_zoom(spn)
+                    image = create_image_response(coords, spn)
         screen.blit(pygame.image.load(BytesIO(image.content)), (0, 0))
         pygame.display.flip()
